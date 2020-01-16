@@ -144,7 +144,7 @@
 		cObj.c.appendChild(cObj.c.cloneNode(false));
 		cObj.c.style.visibility = "hidden";
 		a = [[req1, cObj.c.style], [cObj.mq.style, cObj.c.style]];
-		for (i = a.length-1; i>-1; --i) {
+		for (i = a.length-1; i>-1; --i) { // copy styles
 			for (p in a[i][0])
 				if ((a[i][0].hasOwnProperty && a[i][0].hasOwnProperty(p)) || !a[i][0].hasOwnProperty)
 					a[i][1][p.encamel()] = a[i][0][p];
@@ -368,11 +368,12 @@
 
 
 function marqueeInit(config) {
-	var e = document.getElementById(config.containerId);
-	if (!e) return false; // Делаем невозможным преждевременный вызов.
+    var e = document.getElementById(config.containerId);
+    if (!e) return false; // Делаем невозможным преждевременный вызов.
+    e.style.visibility = "visible"; // We absolutely always need it. No need to move to defaultconfig.style.
 
-	marqueeInit.ar.push(config);
-	marqueeInit.run(config.containerId);
+    marqueeInit.ar.push(config);
+    marqueeInit.run(config.containerId);
 }
 
 
