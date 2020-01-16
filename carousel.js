@@ -249,6 +249,7 @@
 			cObj.c.style.width = isNaN(cObj.cw[0]) ? cObj.w - s + "px" : --cObj.cw[0] + cObj.cw[1];
 		}
 		cObj.c.style.visibility = "visible";
+		cObj.c.id = cObj.mq.containerId; // AK keep the container id, to be able to style it by container #id img.
 		cObj.runIt();
 	}
 
