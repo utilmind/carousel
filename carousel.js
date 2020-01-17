@@ -15,14 +15,13 @@
 		},
 		direction: "left",
 		slowInc: 2, // used in "cursor" mode only.
-		inc: 20, // regular speed in "pause" mode. Increased speed in "cursor" mode, 
+		inc: 20, // regular speed in "pause" mode. Increased speed in "cursor" mode,
 		mouse: "cursor", // "pause", "cursor" or false
 		neutral: 150,
 		saveDirection: false,
 		random: true,
 		fixImages: false, // AK: I forgot what it does, but seems like it always required for IE.
 		pauseDuration: 0, // AK since 15.01.2020. Pause carousel when center of picture appears in center of page.
-		elementWidth: 0, // 1. All elements must have the same width!! 2. This is full width including all margins, borders and paddings: width + padding * 2 + border * 2 + margin * 2
                 addDelay: 0,
 	}, dash, ie = false, oldie = 0, ie5 = false, iever = 0;
 
@@ -91,26 +90,37 @@
 		while ((e = tag.lastChild) && e.nodeType === 3 && tTRE[0].test(e.nodeValue))
 			tag.removeChild(e);
 		if ((e = tag.firstChild) && e.nodeType === 3)
-			e.nodeValue = e.nodeValue.replace(tTRE[1], '');
+			e.nodeValue = e.nodeValue.replace(tTRE[1], "");
 		if ((e = tag.lastChild) && e.nodeType === 3)
-			e.nodeValue = e.nodeValue.replace(tTRE[2], '');
+			e.nodeValue = e.nodeValue.replace(tTRE[2], "");
 		while ((e = tag.firstChild))
 			r[i++] = tag.removeChild(e);
 		return r;
 	}
 
-	function randthem(tag) {
-		var els = oldie ? tag.all : tag.getElementsByTagName('*'), i = els.length - 1, childels = [], newels = [];
-		for (i; i>-1; --i)
-			if (els[i].parentNode === tag) {
-				childels.push(els[i]);
-				newels.push(els[i].cloneNode(true));
-			}
-		newels.sort(function(){ return 0.5 - Math.random(); });
-		i = childels.length - 1;
-		for (i; i>-1; --i)
-			tag.replaceChild(newels[i], childels[i]);
+	function randThem(tag) {
+            var els = oldie ? tag.all : tag.getElementsByTagName("*"), i = els.length - 1, childEls = [], newEls = [];
+            for (i; i>-1; --i)
+              if (els[i].parentNode === tag) {
+                childEls.push(els[i]);
+                newEls.push(els[i].cloneNode(true));
+              }
+
+            newEls.sort(function(){ return 0.5 - Math.random(); });
+            i = childEls.length - 1;
+            for (i; i>-1; --i)
+              tag.replaceChild(newEls[i], childEls[i]);
 	}
+
+        function fullWidth(tag) {
+          var style = tag.currentStyle || window.getComputedStyle(tag),
+              width = tag.offsetWidth, // or use style.width
+              margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+              // padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight),
+              // border = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+
+          return width + margin;// 
+        }
 
 	function Marq(c, tag) {
 		var p, u, s, a, ims, ic, i,
@@ -121,8 +131,14 @@
 		for (p in defaultconfig)
 			if ((cObj.mq.hasOwnProperty && !cObj.mq.hasOwnProperty(p)) || (!cObj.mq.hasOwnProperty && !cObj.mq[p]))
 				cObj.mq[p] = defaultconfig[p];
+
 		if (cObj.mq.random)
-			randthem(tag);
+                  randThem(tag);
+                // get width of the first (any) element
+                if (cObj.mq.pauseDuration) {
+                  var els = oldie ? tag.all : tag.getElementsByTagName("*");
+                  cObj.mq.elWidth = (cObj.mq.firstEl = els.length ? els[0] : 0) ? fullWidth(cObj.mq.firstEl) : 0;
+                }
 
 		cObj.mq.style.width = !cObj.mq.style.width || isNaN(parseInt(cObj.mq.style.width)) ? "100%" : cObj.mq.style.width;
 		cObj.mq.style.height = !tag.getElementsByTagName("img")[0] ?
@@ -132,11 +148,13 @@
 		u = cObj.mq.style.width.split(/\d/);
 		cObj.cw = cObj.mq.style.width ? [parseInt(cObj.mq.style.width), u[u.length-1]] : ["a"];
 		marqContent = trimTags(tag);
+
+		// AK: why do we removing this all??
 		tag.className = tag.id = "";
 		tag.removeAttribute("class", 0);
 		tag.removeAttribute("id", 0);
-		if (ie)
-			tag.removeAttribute("className", 0);
+		if (ie) tag.removeAttribute("className", 0);
+
 		tag.appendChild(tag.cloneNode(false));
 		// tag.className = "marquee" + c; //["marquee", c].join(""); // AK 14.01.2020: this is kinda legacy? I see no use of "marquee"
 		tag.style.overflow = "hidden";
@@ -235,12 +253,19 @@
 					if (!cObj.contains(e)) cObj.slowDeath();
 				}
 			}
-		}
+		} 
+
+		cObj.c.id = cObj.mq.containerId; // AK keep the container id, to be able to style it by container #id img. BEFORE the calculation of computed width!!
+		                                 // For some reason legacy code removes the id in 2 different ways. But I think that it's mistake. We actually REQUIRE this ID.
 		cObj.w = cObj.m[0].offsetWidth;
+   
 		cObj.m[0].style.left = 0;
 		cObj.m[0].style.top = cObj.m[1].style.top = Math.floor((cObj.c.offsetHeight - cObj.m[0].offsetHeight) / 2 - oldie) + "px";
-		cObj.c.id = "";
-		cObj.c.removeAttribute("id", 0);
+
+		// AK 16.01.2020: I see no reasons to remove an ID. Moreover, we require it for correct styling and comuting correct width of the sum of elements!
+		// cObj.c.id = "";                                                                  
+		// cObj.c.removeAttribute("id", 0);
+
 		cObj.m[1].style.left = cObj.w+"px";
 		s = mq.slowInc ? Math.max(mq.slowInc, cObj.sinc) : (cObj.sinc || mq.inc);
 		while (cObj.c.offsetWidth > cObj.w - s && --exit) {
@@ -248,8 +273,8 @@
 			if (w < 1 || cObj.w < Math.max(1, s)) break;
 			cObj.c.style.width = isNaN(cObj.cw[0]) ? cObj.w - s + "px" : --cObj.cw[0] + cObj.cw[1];
 		}
+		// cObj.c.id = cObj.mq.containerId; // AK keep the container id, to be able to style it by container #id img. BEFORE the calculation of computed width!!
 		cObj.c.style.visibility = "visible";
-		cObj.c.id = cObj.mq.containerId; // AK keep the container id, to be able to style it by container #id img.
 		cObj.runIt();
 	}
 
@@ -288,24 +313,23 @@
                 if (mq.pauseDuration  && ((mq.inc == mq.slowInc) || (mq.mouse !== "cursor"))) {
                   var marqueePos = m0l < 0 ? m0l : m1l,
                       halfStep = regularInc / 2,
-                      pauseInterval = mq.elementWidth + halfStep, // interval always static
+                      pauseInterval = mq.elWidth + halfStep, // interval always static
                       pausePoint;
 
-                  pausePoint = (mq.elementWidth > window.innerWidth) ? // element wider than page!
-                      Math.abs((marqueePos + 
-                                             (mq.elementWidth / 2 - window.innerWidth / 2)
+                  pausePoint = (mq.elWidth > window.innerWidth) ? // element wider than page!
+                      Math.abs((marqueePos +
+                                             (mq.elWidth / 2 - window.innerWidth / 2)
                                           ) % pauseInterval) :
 
                       Math.abs(marqueePos % pauseInterval) +
-                                   (window.innerWidth / 2 - mq.elementWidth / 2);
+                                   (window.innerWidth / 2 - mq.elWidth / 2);
 
                   if ((pausePoint >= (pauseInterval - halfStep) && // lower point
-                       pausePoint < pauseInterval + halfStep) // higher point used when elementWidth less than page width
-                     || (pausePoint < halfStep)) { // starting point used when elementWidth is more than page width
+                       pausePoint < pauseInterval + halfStep) // higher point used when elWidth less than page width
+                     || (pausePoint < halfStep)) { // starting point used when elWidth is more than page width
                     sleep = mq.pauseDuration;
                   }
                 }
-
 
 		cObj.m[0].style.left = m0l+"px";
 		cObj.m[1].style.left = m1l+"px";
@@ -346,13 +370,18 @@
 		return false;
 	}
 
-	function resize() {
+	function resize() { // related to all marquee lines
 		for (var s, w, m, i=0; i < marqueeInit.ar.length; ++i)
 			if (marqueeInit.ar[i] && marqueeInit.ar[i].setup) {
 				m = marqueeInit.ar[i].setup;
 				s = m.mq.slowInc ? Math.max(m.mq.slowInc, m.sinc) : (m.sinc || m.mq.inc);
 				m.c.style.width = m.mq.style.width;
 				m.cw[0] = m.cw.length > 1 ? parseInt(m.mq.style.width) : "a";
+
+                                m.w = m.m[0].offsetWidth; // AK 16.01.2020: recalculate the width of marquee on resize!
+                                if (m.mq.pauseDuration) // AK 16.01.2020: update width of the first element
+                                  m.mq.elWidth = fullWidth(m.mq.firstEl);
+
 				while (m.c.offsetWidth > m.w - s) {
 					w = isNaN(m.cw[0]) ? m.w - s : --m.cw[0];
 					if (w < 1) break;

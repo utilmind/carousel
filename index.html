@@ -3,10 +3,50 @@
 <title>Carousel demo</title>
 <meta charset="utf-8" />
 
-<script src="./carousel.min.js" async></script>
+<script src="./carousel.js" async></script>
 
 <style>
-  #logos, #banners { visibility: hidden; }
+  #logos, #banners-pause, #banners-responsive { visibility: hidden; }
+
+  #logos,
+  #banners-pause,
+  #banners-responsive {
+    height: 100px !important;
+  }
+  #banners-pause img {
+    width: 800px;
+    height: 100px;
+    padding: 0;
+    border: 0;
+  }
+  #banners-pause img {
+    margin: 0 64px !important;/* 64px; */
+  }
+
+  @media screen and (max-width:980px) {
+    #banners-responsive {
+      height: 80px !important;
+    }
+    #banners-responsive img {
+      width: 640px;
+      height: 80px !important;
+      margin: 0 20px;
+      padding: 0;
+    }
+  }
+
+  @media screen and (max-width:736px) {
+    #banners-responsive {
+      height: 50px;
+    }
+    #banners-responsive img {
+      width: 400px;
+      height: 50px !important;
+      margin: 0 10px;
+      border: 8px dotted green;
+      padding: 0;
+    }
+  }
 </style>
 
 </head>
@@ -37,21 +77,25 @@
 
 <hr width="50%" style="margin: 3em auto;" />
 
-<style>
-#banners {
-  height: 100px !important;
-}
-#banners img {
-  width: 800px;
-  height: 100px;
-  margin: 0 64px !important;/* 64px; */
-  padding: 0 !important;
-  border: 0 !important;
-}
-</style>
+<!-- make sure that images doesn't have uncontrolled gaps, put all tags together without spaces and line breaks -->
+<div id="banners-pause"><img src="i/b00.jpg" alt=""
+  title="" /><img src="i/b01.jpg" alt=""
+  title="" /><img src="i/b02.jpg" alt=""
+  title="" /><img src="i/b03.png" alt=""
+  title="" /><img src="i/b04.jpg" alt=""
+  title="" /><img src="i/b05.jpg" alt=""
+  title="" /><img src="i/b06.png" alt=""
+  title="" /><img src="i/b07.jpg" alt=""
+  title="" /><img src="i/b08.jpg" alt=""
+  title="" /><img src="i/b09.jpg" alt=""
+  title="" /></div>
+
+<hr width="50%" style="margin: 3em auto;" />
+
+<p>Responsive, with variable margins:</p>
 
 <!-- make sure that images doesn't have uncontrolled gaps, put all tags together without spaces and line breaks -->
-<div id="banners"><img src="i/b00.jpg" alt=""
+<div id="banners-responsive"><img src="i/b00.jpg" alt=""
   title="" /><img src="i/b01.jpg" alt=""
   title="" /><img src="i/b02.jpg" alt=""
   title="" /><img src="i/b03.png" alt=""
@@ -82,7 +126,7 @@ doInit(function() {
    });
 
   marqueeInit({
-      containerId: "banners",
+      containerId: "banners-pause",
       direction: "left",
       inc: 20,
       mouse: "pause",
@@ -90,57 +134,22 @@ doInit(function() {
       random: true,
 
       pauseDuration: 2500, // 2.5 seconds
-      elementWidth: 928, // 1. All elements must have the same width!! 2. This is full width including all margins, borders and paddings: width + padding * 2 + border * 2 + margin * 2
    });
 
-});
+  marqueeInit({
+      containerId: "banners-responsive",
+      direction: "left",
+      slowInc: 5,
+      inc: 20,
+      mouse: "cursor",
+      saveDirection: false,
+      random: true,
+      pauseDuration: 2500, // 2.5 seconds
+   });
+
+}, 2);
 // ]]>
 </script>
-
-<!--
-<form style="margin-top: 40px;">
-  <fieldset><legend>Options:</legend>
-  <table>
-    <tr>
-      <td style="text-align: right">Speed:</td>
-      <td><input type="number" value="10" /> pixels</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">Speed when mouse hovers:</td>
-      <td><input type="number" value="12" /> pixels</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">Additional delay:</td>
-      <td><input type="number" value="0" /> (if you need additional pause on each step for debug purposes)</td>
-    </tr>
-    <tr>
-      <td style="text-align: right">Direction:</td>
-      <td><select><option value="left">Left</option><option value="right">Right</option></select></td>
-    </tr>
-    <tr>
-      <td style="text-align: right">Save direction:</td>
-      <td><select><option value="1">True</option><option value="0">False</option></select></td>
-    </tr>
-    <tr>
-      <td style="text-align: right">Mouse behavior:</td>
-      <td><select><option value="cursor">Cursor</option><option value="pause">Pause</option></select></td>
-    </tr>
-    <tr>
-      <td style="text-align: right">Random elements:</td>
-      <td><select><option value="1">True</option><option value="0">False</option></select></td>
-    </tr>
-    <tr>
-      <td style="text-align: right">Pause duration:</td>
-      <td><input type="number" value="2000" /></td>
-    </tr>
-    <tr>
-      <td style="text-align: right">Element width:</td>
-      <td><input type="number" value="0" /> Important for pausing in correct position. All elements must have the same width and the same paddings/margins for correct pausing.</td>
-    </tr>
-  </table>
-  </fieldset>
-</form>
--->
 
 </body>
 </html>
