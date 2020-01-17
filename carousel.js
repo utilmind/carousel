@@ -299,12 +299,10 @@
 
 		regularInc = (mq.mouse !== "cursor") ? mq.inc = Math.max(1, mq.inc) : mq.slowInc;
 
-		if (dir * parseInt(cObj.m[0].style.left) >= cObj.w) {
+		if (dir * parseInt(cObj.m[0].style.left) >= cObj.w)
 			cObj.m[0].style.left = parseInt(cObj.m[1].style.left) - dir * cObj.w+"px";
-                }
-		if (dir * parseInt(cObj.m[1].style.left) >= cObj.w) {
+		if (dir * parseInt(cObj.m[1].style.left) >= cObj.w)
 			cObj.m[1].style.left = parseInt(cObj.m[0].style.left) - dir * cObj.w+"px";
-                }
 
 		m0l = parseInt(cObj.m[0].style.left) + dir * mq.inc;
 		m1l = parseInt(cObj.m[1].style.left) + dir * mq.inc;
@@ -378,7 +376,18 @@
 				m.c.style.width = m.mq.style.width;
 				m.cw[0] = m.cw.length > 1 ? parseInt(m.mq.style.width) : "a";
 
-                                m.w = m.m[0].offsetWidth; // AK 16.01.2020: recalculate the width of marquee on resize!
+				if (m.w != m.m[0].offsetWidth) { // AK 16.01.2020: recalculate the width of marquee on resize!
+                                  m.w = m.m[0].offsetWidth;
+
+                                  var m0l = parseInt(m.m[0].style.left),
+                                      m1l = parseInt(m.m[1].style.left);
+
+                                  if (m0l > m.w || m0l < m.w)
+                                    m.m[0].style.left = m1l - m.w+"px";
+                                  if (m1l > m.w || m1l < m.w)
+                                    m.m[1].style.left = m0l - m.w+"px";
+				}
+
                                 if (m.mq.pauseDuration) // AK 16.01.2020: update width of the first element
                                   m.mq.elWidth = fullWidth(m.mq.firstEl);
 
