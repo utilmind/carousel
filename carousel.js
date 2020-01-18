@@ -308,8 +308,6 @@
 		if (dir * m1l >= cObj.w)
 			cObj.m[1].style.left = (m1l = m0l - dir * cObj.w)+"px";
 
-console.log(m0l + ' ' + m1l);
-
 		dir*= mq.inc; // dir = dir * mq.inc;
 		m0l+= dir; // m0l = m0l + dir * mq.inc;
 		m1l+= dir; // m1l = m1l + dir * mq.inc;
