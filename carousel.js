@@ -328,19 +328,19 @@
                          // + fl0at(containerStyle.paddingLeft) + fl0at(containerStyle.paddingRight)
                          // + fl0at(containerStyle.borderLeftWidth) + fl0at(containerStyle.borderRightWidth),
                       halfStep = regularInc / 2,
-                      pauseInterval = mq.elWidth, // interval always static
+                      elWidth = mq.elWidth, // pause interval, always static
                       pausePoint;
 
-                  pausePoint = (mq.elWidth > containerWidth) ? // element wider than page!
+                  pausePoint = (elWidth > containerWidth) ? // element wider than page!
                       Math.abs((marqueePos +
-                                             (mq.elWidth / 2 - containerWidth / 2)
-                                          ) % pauseInterval) :
+                                             (elWidth / 2 - containerWidth / 2)
+                                          ) % elWidth) :
 
-                      Math.abs(marqueePos % pauseInterval) +
-                                   (containerWidth / 2 - mq.elWidth / 2);
+                      Math.abs(marqueePos % elWidth) +
+                                   (containerWidth / 2 - elWidth / 2);
 
-                  if ((pausePoint >= (pauseInterval - halfStep) && // lower point
-                       pausePoint < pauseInterval + halfStep) // higher point used when elWidth less than page width
+                  if ((pausePoint >= (elWidth - halfStep) && // lower point
+                       pausePoint < elWidth + halfStep) // higher point used when elWidth less than page width
                      || (pausePoint < halfStep)) { // starting point used when elWidth is more than page width
                     sleep = mq.pauseDuration;
                   }
