@@ -3,7 +3,7 @@
 <title>Carousel demo</title>
 <meta charset="utf-8" />
 
-<script src="./carousel.js" async></script>
+<script src="./carousel.min.js" async></script>
 
 <style>
   #logos, #banners-pause, #banners-responsive { visibility: hidden; }
@@ -78,17 +78,19 @@
 <hr width="50%" style="margin: 3em auto;" />
 
 <!-- make sure that images doesn't have uncontrolled gaps, put all tags together without spaces and line breaks -->
-<div id="banners-pause"><img src="i/b00.jpg" alt=""
-  title="" /><img src="i/b01.jpg" alt=""
-  title="" /><img src="i/b02.jpg" alt=""
-  title="" /><img src="i/b03.png" alt=""
-  title="" /><img src="i/b04.jpg" alt=""
-  title="" /><img src="i/b05.jpg" alt=""
-  title="" /><img src="i/b06.png" alt=""
-  title="" /><img src="i/b07.jpg" alt=""
-  title="" /><img src="i/b08.jpg" alt=""
-  title="" /><img src="i/b09.jpg" alt=""
-  title="" /></div>
+<fieldset style="margin: 0 auto; width: 70%;"><legend>This carousel is in container 70% of screen width</legend>
+  <div id="banners-pause"><img src="i/b00.jpg" alt=""
+    title="" /><img src="i/b01.jpg" alt=""
+    title="" /><img src="i/b02.jpg" alt=""
+    title="" /><img src="i/b03.png" alt=""
+    title="" /><img src="i/b04.jpg" alt=""
+    title="" /><img src="i/b05.jpg" alt=""
+    title="" /><img src="i/b06.png" alt=""
+    title="" /><img src="i/b07.jpg" alt=""
+    title="" /><img src="i/b08.jpg" alt=""
+    title="" /><img src="i/b09.jpg" alt=""
+    title="" /></div>
+</fieldset>
 
 <hr width="50%" style="margin: 3em auto;" />
 
@@ -146,7 +148,6 @@ doInit(function() {
       random: true,
       pauseDuration: 2500, // 2.5 seconds
    });
-
 }, 2);
 // ]]>
 </script>

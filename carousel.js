@@ -71,6 +71,12 @@
 		return false;
 	}
 
+        function fl0at(v, def) { // same as parseFloat, but returns 0 if parseFloat returns non-numerical value
+          if (isNaN(v = parseFloat(v)))
+            v = def ? def : 0;
+          return v;
+        }
+
 	marqueeInit.run = function(id) {
 		var e = document.getElementById(id);
 		if (ie && !marqueeInit.OK && iever < 8 && intable(e)) {
@@ -115,11 +121,12 @@
         function fullWidth(tag) {
           var style = tag.currentStyle || window.getComputedStyle(tag),
               width = tag.offsetWidth, // or use style.width
-              margin = parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-              // padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight),
-              // border = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+              margin = fl0at(style.marginLeft) + fl0at(style.marginRight);
+              // offsetWidth already include the padding and border: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetWidth
+              //   padding = fl0at(style.paddingLeft) + fl0at(style.paddingRight),
+              //   border = fl0at(style.borderLeftWidth) + fl0at(style.borderRightWidth);
 
-          return width + margin;// 
+          return width + margin;
         }
 
 	function Marq(c, tag) {
@@ -140,13 +147,13 @@
                   cObj.mq.elWidth = (cObj.mq.firstEl = els.length ? els[0] : 0) ? fullWidth(cObj.mq.firstEl) : 0;
                 }
 
-		cObj.mq.style.width = !cObj.mq.style.width || isNaN(parseInt(cObj.mq.style.width)) ? "100%" : cObj.mq.style.width;
+		cObj.mq.style.width = !cObj.mq.style.width || isNaN(parseFloat(cObj.mq.style.width)) ? "100%" : cObj.mq.style.width;
 		cObj.mq.style.height = !tag.getElementsByTagName("img")[0] ?
-			(!cObj.mq.style.height || isNaN(parseInt(cObj.mq.style.height)) ? tag.offsetHeight + 3+"px" : cObj.mq.style.height) :
-			(!cObj.mq.style.height || isNaN(parseInt(cObj.mq.style.height)) ? "auto" : cObj.mq.style.height);
+			(!cObj.mq.style.height || fl0at(cObj.mq.style.height, tag.offsetHeight + 3+"px")) :
+			(!cObj.mq.style.height || fl0at(cObj.mq.style.height, "auto"));
 
 		u = cObj.mq.style.width.split(/\d/);
-		cObj.cw = cObj.mq.style.width ? [parseInt(cObj.mq.style.width), u[u.length-1]] : ["a"];
+		cObj.cw = cObj.mq.style.width ? [fl0at(cObj.mq.style.width), u[u.length-1]] : ["a"];
 		marqContent = trimTags(tag);
 
 		// AK: why do we removing this all??
@@ -296,8 +303,8 @@
 		}
 
 
-		var m0l = parseInt(cObj.m[0].style.left),
-                    m1l = parseInt(cObj.m[1].style.left),
+		var m0l = fl0at(cObj.m[0].style.left),
+                    m1l = fl0at(cObj.m[1].style.left),
                     sleep = 0,
                     regularInc = (mq.mouse !== "cursor") ? mq.inc = Math.max(1, mq.inc) : mq.slowInc,
                     dir = mq.direction === "right" ? 1 : -1;
@@ -315,17 +322,22 @@
 		// AK check if the picture is in center of page.
                 if (mq.pauseDuration  && ((mq.inc == mq.slowInc) || (mq.mouse !== "cursor"))) {
                   var marqueePos = m0l < 0 ? m0l : m1l,
+                      container = cObj.c,
+                      containerStyle = container.style,
+                      containerWidth = container.offsetWidth, // originally was window.innerWidth, but we need the width of container, not the whole page
+                         // + fl0at(containerStyle.paddingLeft) + fl0at(containerStyle.paddingRight)
+                         // + fl0at(containerStyle.borderLeftWidth) + fl0at(containerStyle.borderRightWidth),
                       halfStep = regularInc / 2,
-                      pauseInterval = mq.elWidth + halfStep, // interval always static
+                      pauseInterval = mq.elWidth, // interval always static
                       pausePoint;
 
-                  pausePoint = (mq.elWidth > window.innerWidth) ? // element wider than page!
+                  pausePoint = (mq.elWidth > containerWidth) ? // element wider than page!
                       Math.abs((marqueePos +
-                                             (mq.elWidth / 2 - window.innerWidth / 2)
+                                             (mq.elWidth / 2 - containerWidth / 2)
                                           ) % pauseInterval) :
 
                       Math.abs(marqueePos % pauseInterval) +
-                                   (window.innerWidth / 2 - mq.elWidth / 2);
+                                   (containerWidth / 2 - mq.elWidth / 2);
 
                   if ((pausePoint >= (pauseInterval - halfStep) && // lower point
                        pausePoint < pauseInterval + halfStep) // higher point used when elWidth less than page width
@@ -379,16 +391,16 @@
 				m = marqueeInit.ar[i].setup;
 				s = m.mq.slowInc ? Math.max(m.mq.slowInc, m.sinc) : (m.sinc || m.mq.inc);
 				m.c.style.width = m.mq.style.width;
-				m.cw[0] = m.cw.length > 1 ? parseInt(m.mq.style.width) : "a";
+				m.cw[0] = m.cw.length > 1 ? fl0at(m.mq.style.width) : "a";
 
 				if (m.w != m.m[0].offsetWidth) { // AK 16.01.2020: recalculate the width of marquee on resize!
                                   m.w = m.m[0].offsetWidth;
 
                                   // TODO: need more research.
-                                  // if (parseInt(m.m[0].style.left) >= m.w)
-                                    m.m[0].style.left = parseInt(m.m[1].style.left) - m.w+"px";
-                                  // if (parseInt(m.m[1].style.left) >= m.w)
-                                    m.m[1].style.left = parseInt(m.m[0].style.left) - m.w+"px";
+                                  // if (fl0at(m.m[0].style.left) >= m.w)
+                                    m.m[0].style.left = fl0at(m.m[1].style.left) - m.w+"px";
+                                  // if (fl0at(m.m[1].style.left) >= m.w)
+                                    m.m[1].style.left = fl0at(m.m[0].style.left) - m.w+"px";
 				}
 
                                 if (m.mq.pauseDuration) // AK 16.01.2020: update width of the first element
